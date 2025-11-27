@@ -8,15 +8,18 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="shortcut icon" type="image/x-icon" href="favicon.png" />
-    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="shortcut icon"
+      type="image/x-icon"
+      href="./assets/images/favicon.png"
+    />
+    <link rel="stylesheet" href="./assets/css/style.css" />
   </head>
 
   <body>
     <main class="center-card">
       <h1 id="app-title" class="brand">Planning Poker</h1>
       <p class="tagline">Estimer les backlogs de votre équipe !</p>
-
       <button
         id="openModal"
         class="start-btn"
@@ -69,12 +72,13 @@
               required
             />
             <label for="jsonFile">Importer une User Story (en JSON)</label>
+            <p id="jsonError" class="error-msg invisible"></p>
             <div class="file-field">
               <input type="file" id="jsonFile" accept=".json" />
             </div>
             <label for="rule">Sélectionner une règle</label>
             <select id="rule" name="rule" required>
-              <option value="" disabled selected>Sélectionner une règle</option>
+              <option value="unanimite" selected>Unanimité</option>
               <option value="moyenne">Moyenne</option>
               <option value="mediane">Médiane</option>
               <option value="majoriteAbsolue">Majorité absolue</option>
@@ -91,6 +95,6 @@
       </div>
     </section>
 
-    <script type="text/javascript" src="app.js"></script>
+    <script src="./assets/js/main.js" type="module"></script>
   </body>
 </html>

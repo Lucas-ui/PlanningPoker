@@ -1,0 +1,119 @@
+.story-panel {
+  width: 90%;
+  max-width: 800px;
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.participant {
+  margin: 15px 0;
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+.cards-wrapper {
+  width: 90%;
+  max-width: 800px;
+  background-color: #f8f9fa;
+  border-radius: 15px;
+  padding: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.card {
+  width: 80px;
+  height: 120px;
+  cursor: pointer;
+  transition: transform 0.2s;
+  background-color: white;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.card:hover {
+  transform: scale(1.1);
+}
+
+.card img {
+  width: 70%;
+  height: 70%;
+}
+.story-card {
+  width: 90%;
+  max-width: 800px;
+  background: var(--panel);
+  color: var(--title);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin: 20px 0;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--glass-border);
+}
+
+.story-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.story-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--title);
+}
+
+.story-header span {
+  background: rgba(91, 108, 255, 0.2);
+  color: var(--accent-from);
+  padding: 5px 10px;
+  border-radius: var(--radius);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+
+.story-card p {
+  font-size: 1rem;
+  line-height: 1.4;
+  margin: 0;
+  color: var(--muted);
+}
+
+.participant-current {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--title);
+  background: rgba(91, 108, 255, 0.1);
+  padding: 10px;
+  border-radius: var(--radius);
+  text-align: center;
+}
+
+.results-card {
+  width: 60px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border-radius: var(--radius);
+  padding: 5px;
+}
+.results-card img {
+  width: 80%;
+  height: 80%;
+}

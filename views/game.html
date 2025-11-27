@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Planning Poker - Session</title>
+    <link rel="stylesheet" href="../assets/css/style.css" />
+    <link rel="stylesheet" href="../assets/css/cards.css" />
+    <link
+      rel="shortcut icon"
+      type="image/x-icon"
+      href="../assets/images/favicon.png"
+    />
+  </head>
+
+  <body>
+    <main>
+      <div class="story-card">
+        <div class="story-header">
+          <h2 id="storyTitle"></h2>
+          <span id="storyPriority"></span>
+        </div>
+        <p id="storyDescription"></p>
+        <div class="participant-current">
+          Participant actuel : <span id="currentParticipant"></span>
+        </div>
+      </div>
+
+      <div class="cards-wrapper" id="cardsWrapper">
+        <div class="cards-container" id="cardsRow1"></div>
+        <div class="cards-container" id="cardsRow2"></div>
+      </div>
+    </main>
+
+    <script type="module" src="../assets/js/game.js"></script>
+  </body>
+</html>

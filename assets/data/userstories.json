@@ -1,0 +1,25 @@
+{
+  "backlog": [
+    {
+      "id": 1,
+      "titre": "En tant qu'utilisateur, je veux pouvoir me connecter",
+      "description": "Permettre à l'utilisateur de se connecter via email et mot de passe pour accéder à son espace.",
+      "priorite": "haute",
+      "etat": "non_estimée"
+    },
+    {
+      "id": 2,
+      "titre": "En tant qu'utilisateur, je veux modifier mon profil",
+      "description": "L'utilisateur doit pouvoir modifier son nom, son image de profil et ses informations personnelles.",
+      "priorite": "moyenne",
+      "etat": "non_estimée"
+    },
+    {
+      "id": 3,
+      "titre": "En tant qu'admin, je veux gérer les utilisateurs",
+      "description": "Pouvoir ajouter, supprimer et modifier des utilisateurs depuis un tableau de bord admin.",
+      "priorite": "haute",
+      "etat": "non_estimée"
+    }
+  ]
+}
