@@ -1,3 +1,4 @@
+const backlog = JSON.parse(localStorage.getItem("backlog")) || [];
 const results = JSON.parse(localStorage.getItem("results")) || [];
 
 function createResultsTable() {
@@ -35,7 +36,36 @@ function createResultsTable() {
 }
 
 function exportToJSON() {
-  const dataStr = JSON.stringify(results, null, 2);
+  const exportBacklog = backlog.map(story => {
+    const result = results.find(r => r.story.id === story.id);
+
+    if (result) {
+      return {
+        ...story,
+        estimation: result.value,
+        ruleUtilisee: result.rule,
+        nombreTours: result.nbrTours,
+        etat: "estimée"
+      };
+    } else {
+      return {
+        ...story,
+        estimation: null,
+        ruleUtilisee: null,
+        nombreTours: 0,
+        etat: "non_estimée"
+      };
+    }
+  });
+
+  const exportData = {
+    sessionName: localStorage.getItem("sessionName"),
+    participants: JSON.parse(localStorage.getItem("participants")),
+    rule: localStorage.getItem("rule"),
+    backlog: exportBacklog
+  };
+
+  const dataStr = JSON.stringify(exportData, null, 2);
   const dataBlob = new Blob([dataStr], { type: "application/json" });
   
   const link = document.createElement("a");
@@ -52,6 +82,7 @@ function goHome() {
     localStorage.removeItem("backlog");
     localStorage.removeItem("participants");
     localStorage.removeItem("rule");
+    localStorage.removeItem("currentStoryIndex");
   
   window.location.href = "../index.html";
 }

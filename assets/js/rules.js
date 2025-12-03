@@ -1,27 +1,35 @@
-function getNumericVotes(votes) {
-  return votes
-    .map(v => v.vote.replace("cartes_", ""))
+function getAllVoteValues(votes) {
+  return votes.map(v => v.vote.replace("cartes_", ""));
+}
+
+function getNumericValuesFromVotes(votes) {
+  return getAllVoteValues(votes)
     .filter(v => !isNaN(Number(v)))
     .map(Number);
 }
 
-function countVotes(votes) {
+function countVotes(voteValues) {
   const counts = {};
-  votes.forEach(v => counts[v] = (counts[v] || 0) + 1);
+  voteValues.forEach(v => counts[v] = (counts[v] || 0) + 1);
   return counts;
 }
 
 export function calculateFinalValue(votes, rule, firstRound) {
-  const numericVotes = getNumericVotes(votes);
-  
-  if (numericVotes.length === 0) return null;
+  const allVoteValues = getAllVoteValues(votes);
+  const numericVotes = getNumericValuesFromVotes(votes);
 
-  const firstVote = numericVotes[0];
+  if (allVoteValues.length === 0) return null;
 
-  if (firstRound || rule === "unanimite") {
-    return firstVote;
+   if (firstRound || rule === "unanimite") {
+    return allVoteValues[0]; 
   }
 
+  if (numericVotes.length === 0) {
+      const allCounts = countVotes(allVoteValues);
+      const mostVoted = Object.entries(allCounts).sort((a, b) => b[1] - a[1])[0];
+      return mostVoted[0]; 
+  }
+  
   switch (rule) {
     case "moyenne":
       const avg = numericVotes.reduce((a, b) => a + b, 0) / numericVotes.length;
@@ -37,38 +45,36 @@ export function calculateFinalValue(votes, rule, firstRound) {
 
     case "majoriteAbsolue":
     case "majoriteRelative":
-      const counts = countVotes(numericVotes);
-      const mostVoted = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
-      return Number(mostVoted[0]);
+      const allCounts = countVotes(allVoteValues);
+      const mostVoted = Object.entries(allCounts).sort((a, b) => b[1] - a[1])[0];
+      return mostVoted[0];
 
     default:
-      return firstVote;
+      return allVoteValues[0];
   }
 }
 
 export function checkRule(votes, rule, firstRound) {
-  const numericVotes = getNumericVotes(votes);
+  const allVoteValues = getAllVoteValues(votes);
+  const numericVotes = getNumericValuesFromVotes(votes);
 
-  if (numericVotes.length === 0) return false;
+  if (allVoteValues.length === 0) return false;
 
-  const firstVote = numericVotes[0];
+  const firstVote = allVoteValues[0];
 
-  if (firstRound) {
-    return numericVotes.every(v => v === firstVote);
+  if (firstRound || rule === "unanimite") {
+    return allVoteValues.every(v => v === firstVote);
   }
 
   switch (rule) {
-    case "unanimite":
-      return numericVotes.every(v => v === firstVote);
-
     case "moyenne":
     case "mediane":
       return true;
 
     case "majoriteAbsolue":
-      const counts = countVotes(numericVotes);
-      const maxCount = Math.max(...Object.values(counts));
-      return maxCount > numericVotes.length / 2;
+      const allCounts = countVotes(allVoteValues);
+      const maxCount = Math.max(...Object.values(allCounts));
+      return maxCount > allVoteValues.length / 2;
 
     case "majoriteRelative":
       return true;
