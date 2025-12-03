@@ -32,7 +32,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-
+  justify-content: center;
   padding: 32px;
   gap: 24px;
 }
@@ -95,6 +95,14 @@ body {
   box-shadow: 0 8px 20px rgba(91, 108, 255, 0.12);
   transition: transform 0.12s ease, box-shadow 0.12s ease;
   text-decoration: none;
+}
+
+.manage-game-btn {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
 }
 
 .start-btn:active {
