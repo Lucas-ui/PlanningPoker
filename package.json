@@ -1,0 +1,29 @@
+{
+  "name": "planningpoker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lucas-ui/PlanningPoker.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/Lucas-ui/PlanningPoker/issues"
+  },
+  "homepage": "https://github.com/Lucas-ui/PlanningPoker#readme",
+  "devDependencies": {
+    "jest": "^30.2.0"
+  },
+  "dependencies": {
+    "@babel/preset-env": "^7.23.5",
+    "babel-jest": "^30.2.0",
+    "ts-jest": "^29.4.6"
+  }
+}
