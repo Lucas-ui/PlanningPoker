@@ -1,5 +1,12 @@
 import { submitParticipants } from "./createGame.js";
 
+/**
+ * Génère dynamiquement le formulaire permettant de saisir le nom de chaque participant
+ *
+ * @param {number} numParticipants Le nombre de participants pour lesquels créer des champs de saisie
+ * @param {HTMLFormElement} sessionForm
+ * @returns {HTMLFormElement} Le formulaire des participants généré
+ */
 export function createParticipantsForm(numParticipants, sessionForm) {
   const form = document.createElement("form");
   form.id = "participantsForm";

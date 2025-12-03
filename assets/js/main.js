@@ -1,6 +1,12 @@
 import { openModal, closeModal } from "./app.js";
 import { setupGame, resumeGame } from "./createGame.js";
 
+/**
+ * Initialise l'application : configure les écouteurs d'événements
+ * pour l'ouverture/fermeture des modals de configuration et de reprise de session
+ *
+ * @returns {void}
+ */
 function init() {
   document
     .getElementById("openModal")
@@ -23,4 +29,8 @@ function init() {
   resumeGame(resumeForm);
 }
 
+/**
+ * Lance la fonction d'initialisation au chargement du script
+ * @returns {void}
+ */
 init();

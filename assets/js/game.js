@@ -1,5 +1,19 @@
 import { checkRule, calculateFinalValue } from "./rules.js";
 
+/**
+ * Objet global gérant l'état actuel de la partie de Planning Poker
+ *
+ * @type {Object}
+ * @property {Array<Object>} backlog - La liste des User Stories à estimer
+ * @property {Array<string>} participants - La liste des noms des participants
+ * @property {string} rule - La règle de consensus sélectionnée pour la session
+ * @property {number} currentStoryIndex - L'index de l'User Story en cours de vote
+ * @property {number} currentIndex - L'index du participant qui doit voter ensuite
+ * @property {Array<Object>} votes - Les votes collectés pour l'User Story actuelle
+ * @property {boolean} votingOver - Indique si tous les participants ont voté pour le tour actuel
+ * @property {number} nbrTour - Le numéro du tour de vote pour l'User Story actuelle
+ * @property {Array<Object>} results - Les résultats des User Stories déjà estimées
+ */
 const state = {
   backlog: JSON.parse(localStorage.getItem("backlog")),
   participants: JSON.parse(localStorage.getItem("participants")),
@@ -12,6 +26,10 @@ const state = {
   results: JSON.parse(localStorage.getItem("results")) || [],
 };
 
+/**
+ * Liste des noms de fichiers des cartes de vote disponibles
+ * @type {Array<string>}
+ */
 const CARDS = [
   "cartes_0.svg",
   "cartes_1.svg",
@@ -27,17 +45,35 @@ const CARDS = [
   "cartes_cafe.svg",
 ];
 
+/**
+ * Met à jour l'affichage de l'User Story actuelle
+ *
+ * @param {Object} story - L'objet User Story à afficher
+ * @returns {void}
+ */
 function displayStory(story) {
   document.getElementById("storyTitle").textContent = story.titre;
   document.getElementById("storyDescription").textContent = story.description;
   document.getElementById("storyPriority").textContent = story.priorite;
 }
 
+/**
+ * Affiche le nom du participant qui doit voter actuellement
+ *
+ * @param {number} index - L'index du participant dans la liste des participants
+ * @returns {void}
+ */
 function showParticipant(index) {
   document.getElementById("currentParticipant").textContent =
     state.participants[index];
 }
 
+/**
+ * Crée un élément représentant une carte de vote
+ *
+ * @param {string} cardFile - Le nom du fichier SVG de la carte
+ * @returns {HTMLDivElement} L'élément DOM de la carte
+ */
 function createCard(cardFile) {
   const div = document.createElement("div");
   div.classList.add("card");
@@ -49,12 +85,23 @@ function createCard(cardFile) {
   return div;
 }
 
+/**
+ * Rend toutes les cartes de vote disponibles dans le wrapper du DOM
+ * @returns {void}
+ */
 function renderCards() {
   const wrapper = document.getElementById("cardsWrapper");
   wrapper.innerHTML = "";
   CARDS.forEach((cardFile) => wrapper.appendChild(createCard(cardFile)));
 }
 
+/**
+ * Gère le clic d'une carte par un participant. Enregistre le vote et passe au participant suivant.
+ * Si tous ont voté, affiche le bouton de résultats.
+ *
+ * @param {string} cardValue - La valeur de la carte cliquée
+ * @returns {void}
+ */
 function handleCardClick(cardValue) {
   if (state.votingOver) return;
 
@@ -73,6 +120,10 @@ function handleCardClick(cardValue) {
   }
 }
 
+/**
+ * Réinitialise l'état de vote pour permettre un nouveau tour de vote sur la même User Story
+ * @returns {void}
+ */
 function resetVoting() {
   state.votes = [];
   state.currentIndex = 0;
@@ -86,6 +137,12 @@ function resetVoting() {
     "block";
 }
 
+/**
+ * Exporte l'état actuel du backlog (estimé et non estimé) dans un fichier JSON,
+ * puis efface le localStorage et redirige vers la page d'accueil pour prendre une pause
+ *
+ * @returns {void}
+ */
 function takeBreakAndExport() {
   const storyResults = state.backlog.map((story, index) => {
     const result = state.results.find((r) => r.story.id === story.id);
@@ -137,6 +194,12 @@ function takeBreakAndExport() {
   window.location.href = "../index.html";
 }
 
+/**
+ * Enregistre le résultat final du vote pour l'User Story actuelle et passe à la User Story suivante
+ * ou redirige vers la page de résultats finaux
+ *
+ * @returns {void}
+ */
 function saveResultAndNext() {
   const currentStory = state.backlog[state.currentStoryIndex];
   const finalValue = calculateFinalValue(
@@ -179,6 +242,12 @@ function saveResultAndNext() {
   }
 }
 
+/**
+ * Crée l'élément DOM affichant le vote d'un participant après la révélation
+ *
+ * @param {Object} vote - L'objet vote contenant le nom du participant et sa carte votée
+ * @returns {HTMLDivElement} L'élément DOM affichant le nom et la carte votée
+ */
 function createVoteDisplay(vote) {
   const voteDiv = document.createElement("div");
   voteDiv.style.cssText =
@@ -194,6 +263,11 @@ function createVoteDisplay(vote) {
   return voteDiv;
 }
 
+/**
+ * Crée l'élément DOM affichant la règle de vote et le tour actuel
+ *
+ * @returns {HTMLParagraphElement} L'élément DOM d'information sur la règle
+ */
 function createRuleInfo() {
   const ruleInfo = document.createElement("p");
   const currentRule =
@@ -202,6 +276,12 @@ function createRuleInfo() {
   return ruleInfo;
 }
 
+/**
+ * Crée l'élément DOM affichant si la règle a été atteinte
+ *
+ * @param {boolean} ruleReached - Vrai si la règle est atteinte, Faux sinon
+ * @returns {HTMLParagraphElement} L'élément DOM de statut de la règle
+ */
 function createRuleStatus(ruleReached) {
   const status = document.createElement("p");
   status.style.marginTop = "20px";
@@ -213,6 +293,13 @@ function createRuleStatus(ruleReached) {
   return status;
 }
 
+/**
+ * Crée le bouton d'action en fonction du résultat et de la règle
+ *
+ * @param {boolean} ruleReached - Vrai si la règle est atteinte
+ * @param {string} finalValue - La valeur d'estimation finale
+ * @returns {HTMLButtonElement} Le bouton d'action approprié
+ */
 function createActionButton(ruleReached, finalValue) {
   const btn = document.createElement("button");
   btn.classList.add("btn-primary");
@@ -237,6 +324,10 @@ function createActionButton(ruleReached, finalValue) {
   return btn;
 }
 
+/**
+ * Affiche les résultats après la fin du vote, montrant les votes et l'action suivante
+ * @returns {void}
+ */
 function showResults() {
   document.getElementById("cardsWrapper").style.display = "none";
   document.getElementById("currentParticipant").parentNode.style.display =
@@ -270,6 +361,10 @@ function showResults() {
   document.getElementById("resultsBtn").style.display = "none";
 }
 
+/**
+ * Crée et insère le bouton pour afficher les résultats une fois que tous les votes sont enregistrés
+ * @returns {void}
+ */
 function createResultsButton() {
   const btn = document.createElement("button");
   btn.id = "resultsBtn";
@@ -282,6 +377,10 @@ function createResultsButton() {
   document.getElementById("cardsWrapper").parentNode.appendChild(btn);
 }
 
+/**
+ * Fonction d'initialisation appelée au chargement de la page de jeu
+ * @returns {void}
+ */
 function init() {
   displayStory(state.backlog[state.currentStoryIndex]);
   showParticipant(0);
@@ -289,4 +388,8 @@ function init() {
   createResultsButton();
 }
 
+/**
+ * Écouteur d'événement pour démarrer l'initialisation après le chargement complet du DOM
+ * @event DOMContentLoaded
+ */
 window.addEventListener("DOMContentLoaded", init);

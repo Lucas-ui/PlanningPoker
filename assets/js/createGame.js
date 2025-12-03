@@ -1,6 +1,13 @@
 import { closeModal } from "./app.js";
 import { createParticipantsForm } from "./forms.js";
 
+/**
+ * Configure la création d'une nouvelle session de Planning Poker
+ * Attache un écouteur d'événement de soumission au formulaire de session
+ *
+ * @param {HTMLFormElement} sessionForm Le formulaire de configuration initial de la session
+ * @returns {void}
+ */
 export function setupGame(sessionForm) {
   sessionForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -48,6 +55,13 @@ export function setupGame(sessionForm) {
   });
 }
 
+/**
+ * Soumet et enregistre la liste des participants
+ *
+ * @param {Event} e L'objet événement de soumission du formulaire
+ * @param {number} numParticipants Le nombre de participants
+ * @returns {void}
+ */
 export function submitParticipants(e, numParticipants) {
   e.preventDefault();
 
@@ -63,6 +77,12 @@ export function submitParticipants(e, numParticipants) {
   document.location.href = "./views/game.html";
 }
 
+/**
+ * Configure la reprise d'une session de Planning Poker à partir d'un fichier de sauvegarde JSON
+ *
+ * @param {HTMLFormElement} resumeForm Le formulaire d'importation de la session
+ * @returns {void}
+ */
 export function resumeGame(resumeForm) {
   resumeForm.addEventListener("submit", async (e) => {
     e.preventDefault();

@@ -1,6 +1,22 @@
+/**
+ * Liste complète du backlog de la session, y compris les User Story déjà estimées
+ * Chargé depuis localStorage
+ * @type {Array<Object>}
+ */
 const backlog = JSON.parse(localStorage.getItem("backlog")) || [];
+
+/**
+ * Liste des résultats d'estimation finaux pour les user Story votées
+ * Chargé depuis localStorage
+ * @type {Array<Object>}
+ */
 const results = JSON.parse(localStorage.getItem("results")) || [];
 
+/**
+ * Génère la structure HTML du tableau affichant les résultats de la session
+ *
+ * @returns {string} Le code HTML du tableau des résultats ou du message d'état vide
+ */
 function createResultsTable() {
   if (results.length === 0) {
     return `
@@ -35,6 +51,11 @@ function createResultsTable() {
   `;
 }
 
+/**
+ * Construit un objet JSON en fusionnant le backlog original avec les résultats finaux
+ *
+ * @returns {void}
+ */
 function exportToJSON() {
   const exportBacklog = backlog.map(story => {
     const result = results.find(r => r.story.id === story.id);
@@ -76,6 +97,12 @@ function exportToJSON() {
   URL.revokeObjectURL(link.href);
 }
 
+/**
+ * Nettoie toutes les données de la session stockées dans localStorage et redirige
+ * l'utilisateur vers la page d'accueil
+ *
+ * @returns {void}
+ */
 function goHome() {  
     localStorage.removeItem("sessionName");
     localStorage.removeItem("results");
@@ -87,6 +114,12 @@ function goHome() {
   window.location.href = "../index.html";
 }
 
+/**
+ * Événement d'initialisation déclenché au chargement du DOM
+ * 
+ * @event DOMContentLoaded
+ * @returns {void}
+ */
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("resultsContent").innerHTML = createResultsTable();
     document.getElementById("exportBtn").addEventListener("click", exportToJSON);
