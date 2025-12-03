@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: createGame.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: createGame.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { closeModal } from "./app.js";
+import { createParticipantsForm } from "./forms.js";
+
+/**
+ * Configure la création d'une nouvelle session de Planning Poker
+ * Attache un écouteur d'événement de soumission au formulaire de session
+ *
+ * @param {HTMLFormElement} sessionForm Le formulaire de configuration initial de la session
+ * @returns {void}
+ */
+export function setupGame(sessionForm) {
+  sessionForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const jsonInput = document.getElementById("jsonFile");
+    const error = document.getElementById("jsonError");
+
+    error.textContent = "";
+    error.classList.remove("visible");
+
+    const file = jsonInput.files[0];
+
+    if (!file) {
+      error.textContent = "Veuillez renseigner un fichier JSON.";
+      error.classList.add("visible");
+      return;
+    }
+
+    let data;
+    try {
+      const text = await file.text();
+      data = JSON.parse(text);
+
+      if (!data.backlog) {
+        error.textContent = "Le JSON ne contient pas le champ 'backlog'.";
+        error.classList.add("visible");
+        return;
+      }
+
+      localStorage.setItem("backlog", JSON.stringify(data.backlog));
+    } catch (err) {
+      error.textContent = "JSON invalide : " + err.message;
+      error.classList.add("visible");
+      return;
+    }
+
+    const num = parseInt(document.getElementById("participants").value);
+    const participantsForm = createParticipantsForm(num, sessionForm);
+    const sessionName = document.getElementById("sessionName").value;
+    const rule = document.getElementById("rule").value;
+    localStorage.setItem("sessionName", sessionName);
+    localStorage.setItem("rule", rule);
+
+    sessionForm.replaceWith(participantsForm);
+  });
+}
+
+/**
+ * Soumet et enregistre la liste des participants
+ *
+ * @param {Event} e L'objet événement de soumission du formulaire
+ * @param {number} numParticipants Le nombre de participants
+ * @returns {void}
+ */
+export function submitParticipants(e, numParticipants) {
+  e.preventDefault();
+
+  const participants = [];
+  for (let i = 1; i &lt;= numParticipants; i++) {
+    participants.push(document.getElementById(`participant${i}`).value.trim());
+  }
+
+  localStorage.setItem("participants", JSON.stringify(participants));
+
+  closeModal();
+
+  document.location.href = "./views/game.html";
+}
+
+/**
+ * Configure la reprise d'une session de Planning Poker à partir d'un fichier de sauvegarde JSON
+ *
+ * @param {HTMLFormElement} resumeForm Le formulaire d'importation de la session
+ * @returns {void}
+ */
+export function resumeGame(resumeForm) {
+  resumeForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const jsonInput = document.getElementById("resumeJsonFile");
+    const error = document.getElementById("resumeJsonError");
+
+    if (error) {
+      error.textContent = "";
+      error.classList.remove("visible");
+    }
+
+    const file = jsonInput.files[0];
+
+    if (!file) {
+      if (error) {
+        error.textContent = "Veuillez renseigner un fichier JSON de sauvegarde.";
+        error.classList.add("visible");
+      }
+      return;
+    }
+
+    let data;
+    try {
+      const text = await file.text();
+      data = JSON.parse(text);
+
+      if (!data.backlog || !data.participants || !data.rule || !data.sessionName) {
+        if (error) {
+          error.textContent = "Fichier JSON invalide. Il doit contenir 'backlog', 'participants', 'rule' et 'sessionName'.";
+          error.classList.add("visible");
+        }
+        return;
+      }
+      
+      let votedResults = data.backlog
+        .filter(story => story.etat === "estimée")
+        .map(story => ({
+          story: {
+            id: story.id,
+            titre: story.titre,
+            description: story.description,
+            priorite: story.priorite,
+            etat: story.etat
+          },
+          value: story.estimation,
+          rule: story.ruleUtilisee,
+          nbrTours: story.nombreTours
+        }));
+
+      const lastResultIndex = votedResults.length - 1;
+      if (lastResultIndex >= 0 &amp;&amp; votedResults[lastResultIndex].value === "cafe") {
+          votedResults.pop();
+      }
+      
+      const startIndex = votedResults.length;
+
+      localStorage.setItem("sessionName", data.sessionName);
+      localStorage.setItem("rule", data.rule);
+      localStorage.setItem("participants", JSON.stringify(data.participants));
+      localStorage.setItem("backlog", JSON.stringify(data.backlog)); 
+      localStorage.setItem("results", JSON.stringify(votedResults)); 
+      localStorage.setItem("currentStoryIndex", startIndex);
+
+      document.location.href = "./views/game.html";
+
+    } catch (err) {
+      if (error) {
+        error.textContent = "JSON invalide : " + err.message;
+        error.classList.add("visible");
+      }
+      return;
+    }
+  });
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Events</h3><ul><li><a href="global.html#event:DOMContentLoaded">DOMContentLoaded</a></li><li><a href="global.html#event:click">click</a></li></ul><h3>Global</h3><ul><li><a href="global.html#CARDS">CARDS</a></li><li><a href="global.html#backlog">backlog</a></li><li><a href="global.html#calculateFinalValue">calculateFinalValue</a></li><li><a href="global.html#checkRule">checkRule</a></li><li><a href="global.html#closeModal">closeModal</a></li><li><a href="global.html#countVotes">countVotes</a></li><li><a href="global.html#createActionButton">createActionButton</a></li><li><a href="global.html#createCard">createCard</a></li><li><a href="global.html#createParticipantsForm">createParticipantsForm</a></li><li><a href="global.html#createResultsButton">createResultsButton</a></li><li><a href="global.html#createResultsTable">createResultsTable</a></li><li><a href="global.html#createRuleInfo">createRuleInfo</a></li><li><a href="global.html#createRuleStatus">createRuleStatus</a></li><li><a href="global.html#createVoteDisplay">createVoteDisplay</a></li><li><a href="global.html#displayStory">displayStory</a></li><li><a href="global.html#exportToJSON">exportToJSON</a></li><li><a href="global.html#getAllVoteValues">getAllVoteValues</a></li><li><a href="global.html#getNumericValuesFromVotes">getNumericValuesFromVotes</a></li><li><a href="global.html#goHome">goHome</a></li><li><a href="global.html#handleCardClick">handleCardClick</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#openModal">openModal</a></li><li><a href="global.html#renderCards">renderCards</a></li><li><a href="global.html#resetVoting">resetVoting</a></li><li><a href="global.html#results">results</a></li><li><a href="global.html#resumeGame">resumeGame</a></li><li><a href="global.html#saveResultAndNext">saveResultAndNext</a></li><li><a href="global.html#setupGame">setupGame</a></li><li><a href="global.html#showParticipant">showParticipant</a></li><li><a href="global.html#showResults">showResults</a></li><li><a href="global.html#state">state</a></li><li><a href="global.html#submitParticipants">submitParticipants</a></li><li><a href="global.html#takeBreakAndExport">takeBreakAndExport</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Dec 03 2025 13:49:01 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

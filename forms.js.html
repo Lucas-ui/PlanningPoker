@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: forms.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,57 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: forms.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { submitParticipants } from "./createGame.js";
 
+/**
+ * Génère dynamiquement le formulaire permettant de saisir le nom de chaque participant
+ *
+ * @param {number} numParticipants Le nombre de participants pour lesquels créer des champs de saisie
+ * @param {HTMLFormElement} sessionForm
+ * @returns {HTMLFormElement} Le formulaire des participants généré
+ */
+export function createParticipantsForm(numParticipants, sessionForm) {
+  const form = document.createElement("form");
+  form.id = "participantsForm";
 
-    <h3> </h3>
+  let html = `&lt;p>Veuillez entrer le nom de chaque participant :&lt;/p>`;
+  for (let i = 1; i &lt;= numParticipants; i++) {
+    html += `
+      &lt;label for="participant${i}">Participant ${i}&lt;/label>
+      &lt;input type="text" id="participant${i}" name="participant${i}" placeholder="Nom ${i}" required />`;
+  }
 
+  html += `
+    &lt;div class="form-actions">
+      &lt;button type="button" id="backToSessionForm" class="btn-secondary">Retour&lt;/button>
+      &lt;button type="submit" class="btn-primary">Démarrer la session&lt;/button>
+    &lt;/div>
+  `;
 
+  form.innerHTML = html;
 
+  form.querySelector("#backToSessionForm").addEventListener("click", () => {
+    form.replaceWith(sessionForm);
+  });
 
+  form.addEventListener("submit", (e) =>
+    submitParticipants(e, numParticipants)
+  );
 
-
-
-
-
-
-    
-
-
-
-
-
+  return form;
+}
+</code></pre>
+        </article>
+    </section>
 
 
 

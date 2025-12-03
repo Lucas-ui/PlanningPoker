@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: results.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: results.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Liste complète du backlog de la session, y compris les User Story déjà estimées
+ * Chargé depuis localStorage
+ * @type {Array&lt;Object>}
+ */
+const backlog = JSON.parse(localStorage.getItem("backlog")) || [];
+
+/**
+ * Liste des résultats d'estimation finaux pour les user Story votées
+ * Chargé depuis localStorage
+ * @type {Array&lt;Object>}
+ */
+const results = JSON.parse(localStorage.getItem("results")) || [];
+
+/**
+ * Génère la structure HTML du tableau affichant les résultats de la session
+ *
+ * @returns {string} Le code HTML du tableau des résultats ou du message d'état vide
+ */
+function createResultsTable() {
+  if (results.length === 0) {
+    return `
+      &lt;div class="empty-state">
+        &lt;h2>Aucun résultat disponible&lt;/h2>
+        &lt;p>Vous n'avez pas encore effectué de vote.&lt;/p>
+      &lt;/div>
+    `;
+  }
+
+  return `
+    &lt;table class="results-table" cellspacing="0" cellpadding="8">
+      &lt;thead>
+        &lt;tr>
+          &lt;th>User Story&lt;/th>
+          &lt;th>Résultats&lt;/th>
+          &lt;th>Règle&lt;/th>
+          &lt;th>Tours&lt;/th>
+        &lt;/tr>
+      &lt;/thead>
+      &lt;tbody>
+        ${results.map(result => `
+          &lt;tr>
+            &lt;td class="story-title">${result.story.titre}&lt;/td>
+            &lt;td class="vote-value">${result.value}&lt;/td>
+            &lt;td>${result.rule}&lt;/td>
+            &lt;td>${result.nbrTours}&lt;/td>
+          &lt;/tr>
+        `).join('')}
+      &lt;/tbody>
+    &lt;/table>
+  `;
+}
+
+/**
+ * Construit un objet JSON en fusionnant le backlog original avec les résultats finaux
+ *
+ * @returns {void}
+ */
+function exportToJSON() {
+  const exportBacklog = backlog.map(story => {
+    const result = results.find(r => r.story.id === story.id);
+
+    if (result) {
+      return {
+        ...story,
+        estimation: result.value,
+        ruleUtilisee: result.rule,
+        nombreTours: result.nbrTours,
+        etat: "estimée"
+      };
+    } else {
+      return {
+        ...story,
+        estimation: null,
+        ruleUtilisee: null,
+        nombreTours: 0,
+        etat: "non_estimée"
+      };
+    }
+  });
+
+  const exportData = {
+    sessionName: localStorage.getItem("sessionName"),
+    participants: JSON.parse(localStorage.getItem("participants")),
+    rule: localStorage.getItem("rule"),
+    backlog: exportBacklog
+  };
+
+  const dataStr = JSON.stringify(exportData, null, 2);
+  const dataBlob = new Blob([dataStr], { type: "application/json" });
+  
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(dataBlob);
+  link.download = `planning-poker-results-${new Date().toISOString().split('T')[0]}.json`;
+  link.click();
+  
+  URL.revokeObjectURL(link.href);
+}
+
+/**
+ * Nettoie toutes les données de la session stockées dans localStorage et redirige
+ * l'utilisateur vers la page d'accueil
+ *
+ * @returns {void}
+ */
+function goHome() {  
+    localStorage.removeItem("sessionName");
+    localStorage.removeItem("results");
+    localStorage.removeItem("backlog");
+    localStorage.removeItem("participants");
+    localStorage.removeItem("rule");
+    localStorage.removeItem("currentStoryIndex");
+  
+  window.location.href = "../index.html";
+}
+
+/**
+ * Événement d'initialisation déclenché au chargement du DOM
+ * 
+ * @event DOMContentLoaded
+ * @returns {void}
+ */
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("resultsContent").innerHTML = createResultsTable();
+    document.getElementById("exportBtn").addEventListener("click", exportToJSON);
+  document.getElementById("homeBtn").addEventListener("click", goHome);
+});</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Events</h3><ul><li><a href="global.html#event:DOMContentLoaded">DOMContentLoaded</a></li><li><a href="global.html#event:click">click</a></li></ul><h3>Global</h3><ul><li><a href="global.html#CARDS">CARDS</a></li><li><a href="global.html#backlog">backlog</a></li><li><a href="global.html#calculateFinalValue">calculateFinalValue</a></li><li><a href="global.html#checkRule">checkRule</a></li><li><a href="global.html#closeModal">closeModal</a></li><li><a href="global.html#countVotes">countVotes</a></li><li><a href="global.html#createActionButton">createActionButton</a></li><li><a href="global.html#createCard">createCard</a></li><li><a href="global.html#createParticipantsForm">createParticipantsForm</a></li><li><a href="global.html#createResultsButton">createResultsButton</a></li><li><a href="global.html#createResultsTable">createResultsTable</a></li><li><a href="global.html#createRuleInfo">createRuleInfo</a></li><li><a href="global.html#createRuleStatus">createRuleStatus</a></li><li><a href="global.html#createVoteDisplay">createVoteDisplay</a></li><li><a href="global.html#displayStory">displayStory</a></li><li><a href="global.html#exportToJSON">exportToJSON</a></li><li><a href="global.html#getAllVoteValues">getAllVoteValues</a></li><li><a href="global.html#getNumericValuesFromVotes">getNumericValuesFromVotes</a></li><li><a href="global.html#goHome">goHome</a></li><li><a href="global.html#handleCardClick">handleCardClick</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#openModal">openModal</a></li><li><a href="global.html#renderCards">renderCards</a></li><li><a href="global.html#resetVoting">resetVoting</a></li><li><a href="global.html#results">results</a></li><li><a href="global.html#resumeGame">resumeGame</a></li><li><a href="global.html#saveResultAndNext">saveResultAndNext</a></li><li><a href="global.html#setupGame">setupGame</a></li><li><a href="global.html#showParticipant">showParticipant</a></li><li><a href="global.html#showResults">showResults</a></li><li><a href="global.html#state">state</a></li><li><a href="global.html#submitParticipants">submitParticipants</a></li><li><a href="global.html#takeBreakAndExport">takeBreakAndExport</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Dec 03 2025 13:49:01 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
